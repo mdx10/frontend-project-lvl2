@@ -5,7 +5,7 @@
   "description": "Hexlet project lvl 2. GenDiff.",
   "main": "index.js",
   "bin": {
-      "gendiff": "bin/gendiff.js"
+    "gendiff": "bin/gendiff.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,5 +19,10 @@
   "bugs": {
     "url": "https://github.com/mdx10/frontend-project-lvl2/issues"
   },
-  "homepage": "https://github.com/mdx10/frontend-project-lvl2#readme"
+  "homepage": "https://github.com/mdx10/frontend-project-lvl2#readme",
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.3"
+  }
 }
