@@ -1,0 +1,23 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Hexlet project lvl 2. GenDiff.",
+  "main": "index.js",
+  "bin": {
+      "gendiff": "bin/gendiff.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdx10/frontend-project-lvl2.git"
+  },
+  "author": "Aleksandr Smirnov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mdx10/frontend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/mdx10/frontend-project-lvl2#readme"
+}
