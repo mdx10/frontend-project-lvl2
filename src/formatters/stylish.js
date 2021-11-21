@@ -15,7 +15,7 @@ const stylish = (data) => {
 
     const lines = currentValue
       .flatMap((item) => {
-        if (item.type === 'unchange') {
+        if (item.type === 'unchange' || item.type === 'parent') {
           return `${indent}${item.key}: ${iter(item.value, depth + 1)}`;
         }
         if (item.type === 'added') {

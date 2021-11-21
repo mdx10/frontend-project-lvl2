@@ -3,7 +3,7 @@ import path from 'path';
 import process from 'process';
 import _ from 'lodash';
 import parse from './parser.js';
-import stylish from './fomatter.js';
+import getFormatter from './formatters/index.js';
 
 const getAbsolutePath = (filepath) => path.resolve(process.cwd(), filepath);
 
@@ -20,7 +20,7 @@ const makeTreeDiff = (data1, data2) => {
           {
             key,
             value: makeTreeDiff(data1[key], data2[key]),
-            type: 'unchange',
+            type: 'parent',
           },
         ];
       }
@@ -66,16 +66,11 @@ const makeTreeDiff = (data1, data2) => {
     }, []);
 };
 
-const genDiff = (filepath1, filepath2, formatter = 'stylish') => {
+const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
   const fileData1 = parse(getFileContent(filepath1), path.extname(filepath1));
   const fileData2 = parse(getFileContent(filepath2), path.extname(filepath2));
 
-  let format;
-  if (formatter === 'stylish') {
-    format = stylish;
-  } else {
-    throw new Error(`Format '${formatter}' is not supported.`);
-  }
+  const format = getFormatter(formatName);
 
   return format(makeTreeDiff(fileData1, fileData2));
 };
