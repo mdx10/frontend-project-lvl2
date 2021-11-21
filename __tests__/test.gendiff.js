@@ -11,6 +11,7 @@ const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8'
 
 const stylish = readFile('result-stylish.txt');
 const plain = readFile('result-plain.txt');
+const json = readFile('result-json.txt');
 
 test('test-json', () => {
   const filepath1 = getFixturePath('nested1.json');
@@ -26,4 +27,9 @@ test('test-plain', () => {
   const filepath1 = getFixturePath('nested1.json');
   const filepath2 = getFixturePath('nested2.json');
   expect(genDiff(filepath1, filepath2, 'plain')).toBe(plain);
+});
+test('test-json-format', () => {
+  const filepath1 = getFixturePath('nested1.json');
+  const filepath2 = getFixturePath('nested2.json');
+  expect(genDiff(filepath1, filepath2, 'json')).toBe(json);
 });

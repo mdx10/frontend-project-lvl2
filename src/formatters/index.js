@@ -8,5 +8,8 @@ export default (formatName) => {
   if (formatName === 'plain') {
     return plain;
   }
+  if (formatName === 'json') {
+    return JSON.stringify;
+  }
   throw new Error(`Format '${formatName}' is not supported.`);
 };
