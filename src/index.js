@@ -13,65 +13,52 @@ const makeTreeDiff = (data1, data2) => {
   const keys = _.sortBy(Object.keys({ ...data1, ...data2 }));
 
   return keys
-    .reduce((acc, key) => {
+    .map((key) => {
       if (_.isObject(data1[key]) && _.isObject(data2[key])) {
-        return [
-          ...acc,
-          {
-            key,
-            value: makeTreeDiff(data1[key], data2[key]),
-            type: 'parent',
-          },
-        ];
+        return {
+          type: 'nested',
+          key,
+          value: null,
+          children: makeTreeDiff(data1[key], data2[key]),
+        };
       }
       if (!_.has(data1, key)) {
-        return [
-          ...acc,
-          {
-            key,
-            value: data2[key],
-            type: 'added',
-          },
-        ];
+        return {
+          type: 'added',
+          key,
+          value: data2[key],
+        };
       }
       if (!_.has(data2, key)) {
-        return [
-          ...acc,
-          {
-            key,
-            value: data1[key],
-            type: 'removed',
-          },
-        ];
-      }
-      if (data1[key] !== data2[key]) {
-        return [
-          ...acc,
-          {
-            key,
-            oldValue: data1[key],
-            newValue: data2[key],
-            type: 'updated',
-          },
-        ];
-      }
-      return [
-        ...acc,
-        {
+        return {
+          type: 'removed',
           key,
           value: data1[key],
-          type: 'unchange',
-        },
-      ];
-    }, []);
+        };
+      }
+      if (data1[key] !== data2[key]) {
+        return {
+          key,
+          type: 'updated',
+          value: data1[key],
+          newValue: data2[key],
+        };
+      }
+      return {
+        type: 'unchange',
+        key,
+        value: data1[key],
+      };
+    });
 };
 
 const genDiff = (filepath1, filepath2, formatName = 'stylish') => {
-  const fileData1 = parse(getFileContent(filepath1), path.extname(filepath1));
-  const fileData2 = parse(getFileContent(filepath2), path.extname(filepath2));
+  const fileExtend1 = path.extname(filepath1).slice(1);
+  const fileExtend2 = path.extname(filepath2).slice(1);
+  const fileData1 = parse(getFileContent(filepath1), fileExtend1);
+  const fileData2 = parse(getFileContent(filepath2), fileExtend2);
 
   const format = getFormatter(formatName);
-
   return format(makeTreeDiff(fileData1, fileData2));
 };
 

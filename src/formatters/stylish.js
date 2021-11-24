@@ -15,33 +15,32 @@ const stylish = (data) => {
 
     const lines = currentValue
       .flatMap((item) => {
-        if (item.type === 'unchange' || item.type === 'parent') {
-          return `${indent}${item.key}: ${iter(item.value, depth + 1)}`;
+        switch (item.type) {
+          case 'nested':
+            return `${indent}${item.key}: ${iter(item.children, depth + 1)}`;
+          case 'added':
+            return `${indentForChaned}+ ${item.key}: ${iter(item.value, depth + 1)}`;
+          case 'removed':
+            return `${indentForChaned}- ${item.key}: ${iter(item.value, depth + 1)}`;
+          case 'updated':
+            return [
+              `${indentForChaned}- ${item.key}: ${iter(item.value, depth + 1)}`,
+              `${indentForChaned}+ ${item.key}: ${iter(item.newValue, depth + 1)}`,
+            ];
+          case 'unchange':
+            return `${indent}${item.key}: ${iter(item.value, depth + 1)}`;
+          default:
+            return Object
+              .entries(item)
+              .map(([key, value]) => `${indent}${key}: ${iter(value, depth + 1)}`);
         }
-        if (item.type === 'added') {
-          return `${indentForChaned}+ ${item.key}: ${iter(item.value, depth + 1)}`;
-        }
-        if (item.type === 'removed') {
-          return `${indentForChaned}- ${item.key}: ${iter(item.value, depth + 1)}`;
-        }
-        if (item.type === 'updated') {
-          return [
-            `${indentForChaned}- ${item.key}: ${iter(item.oldValue, depth + 1)}`,
-            `${indentForChaned}+ ${item.key}: ${iter(item.newValue, depth + 1)}`,
-          ];
-        }
-        return Object
-          .entries(item)
-          .map(([key, value]) => `${indent}${key}: ${iter(value, depth + 1)}`);
       });
-
     return [
       '{',
       ...lines,
       `${bracketIndent}}`,
     ].join('\n');
   };
-
   return iter(data, 1);
 };
 

@@ -1,15 +1,16 @@
 import stylish from './stylish.js';
 import plain from './plain.js';
+import json from './json.js';
 
 export default (formatName) => {
-  if (formatName === 'stylish') {
-    return stylish;
+  switch (formatName) {
+    case 'stylish':
+      return stylish;
+    case 'plain':
+      return plain;
+    case 'json':
+      return json;
+    default:
+      throw new Error(`Format '${formatName}' is not supported.`);
   }
-  if (formatName === 'plain') {
-    return plain;
-  }
-  if (formatName === 'json') {
-    return JSON.stringify;
-  }
-  throw new Error(`Format '${formatName}' is not supported.`);
 };

@@ -14,25 +14,23 @@ const plain = (data) => {
     const lines = currentValue
       .filter((item) => item.type !== 'unchange')
       .map((item) => {
-        if (item.type === 'added') {
-          return `Property '${parent}${item.key}' was added with value: ${iter(item.value)}`;
+        switch (item.type) {
+          case 'nested': {
+            const path = `${parent}${item.key}.`;
+            return iter(item.children, path);
+          }
+          case 'added':
+            return `Property '${parent}${item.key}' was added with value: ${iter(item.value)}`;
+          case 'removed':
+            return `Property '${parent}${item.key}' was removed`;
+          case 'updated':
+            return `Property '${parent}${item.key}' was updated. From ${iter(item.value)} to ${iter(item.newValue)}`;
+          default:
+            throw new Error(`Type '${item.type}' is not supported!`);
         }
-        if (item.type === 'removed') {
-          return `Property '${parent}${item.key}' was removed`;
-        }
-        if (item.type === 'updated') {
-          return `Property '${parent}${item.key}' was updated. From ${iter(item.oldValue)} to ${iter(item.newValue)}`;
-        }
-        if (item.type === 'parent') {
-          const parents = `${parent}${item.key}.`;
-          return iter(item.value, parents);
-        }
-        return '';
       });
-
     return lines.join('\n');
   };
-
   return iter(data);
 };
 
