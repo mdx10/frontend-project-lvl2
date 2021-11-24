@@ -30,7 +30,7 @@ Options:
   -h, --help           display help for command
 ```
 
-```
+``` javascript
 import genDiff from '@hexlet/code';
 
 const diff = genDiff(filepath1, filepath2, formatName);
