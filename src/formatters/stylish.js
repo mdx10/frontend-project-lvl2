@@ -1,47 +1,55 @@
 import _ from 'lodash';
 
+const symbols = {
+  added: '+ ',
+  removed: '- ',
+};
+
+const getIndent = (depth, spaces = 4) => {
+  const indentSize = depth * spaces;
+  return ' '.repeat(indentSize);
+};
+
+const stringify = (currentValue, depth) => {
+  if (!_.isPlainObject(currentValue)) return `${currentValue}`;
+  const indent = getIndent(depth);
+  const bracketIndent = indent.slice(0, -4);
+  const lines = Object
+    .entries(currentValue)
+    .map(([key, value]) => `${indent}${key}: ${stringify(value, depth + 1)}`);
+  return [
+    '{',
+    ...lines,
+    `${bracketIndent}}`,
+  ].join('\n');
+};
+
 const stylish = (data) => {
   const iter = (currentValue, depth) => {
-    if (!Array.isArray(currentValue)) {
-      return _.isObject(currentValue)
-        ? iter([currentValue], depth)
-        : currentValue;
-    }
-
-    const indentSize = depth * 2;
-    const indent = '  '.repeat(indentSize);
-    const indentForChaned = '  '.repeat(indentSize - 1);
-    const bracketIndent = '  '.repeat(indentSize - 2);
-
+    const indent = getIndent(depth);
+    const indentForChaned = getIndent(depth).slice(0, -2);
     const lines = currentValue
       .flatMap((item) => {
         switch (item.type) {
           case 'nested':
-            return `${indent}${item.key}: ${iter(item.children, depth + 1)}`;
+            return `${indent}${item.key}: {\n${iter(item.children, depth + 1)}\n${indent}}`;
           case 'added':
-            return `${indentForChaned}+ ${item.key}: ${iter(item.value, depth + 1)}`;
           case 'removed':
-            return `${indentForChaned}- ${item.key}: ${iter(item.value, depth + 1)}`;
+            return `${indentForChaned}${symbols[item.type]}${item.key}: ${stringify(item.value, depth + 1)}`;
           case 'updated':
             return [
-              `${indentForChaned}- ${item.key}: ${iter(item.value, depth + 1)}`,
-              `${indentForChaned}+ ${item.key}: ${iter(item.newValue, depth + 1)}`,
+              `${indentForChaned}${symbols.removed}${item.key}: ${stringify(item.value, depth + 1)}`,
+              `${indentForChaned}${symbols.added}${item.key}: ${stringify(item.newValue, depth + 1)}`,
             ];
           case 'unchange':
-            return `${indent}${item.key}: ${iter(item.value, depth + 1)}`;
+            return `${indent}${item.key}: ${stringify(item.value, depth + 1)}`;
           default:
-            return Object
-              .entries(item)
-              .map(([key, value]) => `${indent}${key}: ${iter(value, depth + 1)}`);
+            throw new Error(`Type ${item.type} is not supported!`);
         }
       });
-    return [
-      '{',
-      ...lines,
-      `${bracketIndent}}`,
-    ].join('\n');
+    return lines.join('\n');
   };
-  return iter(data, 1);
+  return `{\n${iter(data, 1)}\n}`;
 };
 
 export default stylish;
